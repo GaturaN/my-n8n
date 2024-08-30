@@ -1,0 +1,67 @@
+{
+  "active": false,
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2024-08-30T07:42:48.558Z",
+  "id": "TYHab0S89lMOKFEP",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "My workflow 3",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "086527d2-f9cf-409d-aa99-577f4a3fcf1b",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c3a2d912-78bc-460a-8cb8-2668e2e6281f",
+              "name": "test",
+              "value": "hello",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f715de99-ddbe-4642-bab0-7d1508af9ba3",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1420,
+        600
+      ]
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2024-08-30T07:42:48.558Z",
+  "versionId": "c756e6fa-b022-4834-b128-0c4dd3da18e8"
+}
