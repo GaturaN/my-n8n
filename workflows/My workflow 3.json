@@ -1,11 +1,90 @@
 {
   "active": false,
   "connections": {
-    "When clicking ‘Test workflow’": {
+    "Google Sheets Trigger": {
       "main": [
         [
           {
-            "node": "Edit Fields",
+            "node": "ceate_all-attachments_array",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Xero",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ceate_all-attachments_array": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "get_file_id",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_file_id": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
             "type": "main",
             "index": 0
           }
@@ -21,14 +100,111 @@
   "name": "My workflow 3",
   "nodes": [
     {
-      "parameters": {},
-      "id": "086527d2-f9cf-409d-aa99-577f4a3fcf1b",
-      "name": "When clicking ‘Test workflow’",
-      "type": "n8n-nodes-base.manualTrigger",
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1vGRraKIqht0FAHkC7btVD-7aqPjy_SbJWkU15mL5ti0",
+          "mode": "list",
+          "cachedResultName": "Supplier_Bills",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1vGRraKIqht0FAHkC7btVD-7aqPjy_SbJWkU15mL5ti0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1834874338,
+          "mode": "list",
+          "cachedResultName": "Test",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1vGRraKIqht0FAHkC7btVD-7aqPjy_SbJWkU15mL5ti0/edit#gid=1834874338"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "id": "1c30e592-105d-40f5-8042-c64bda213112",
+      "name": "Google Sheets Trigger",
+      "type": "n8n-nodes-base.googleSheetsTrigger",
       "typeVersion": 1,
       "position": [
-        1200,
-        600
+        880,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "all_attachments",
+        "options": {}
+      },
+      "id": "6076f22a-004d-43a3-b310-b68ab1dd135e",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1340,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const all_attachments = [];\nconst keys = Object.keys(items[0].json);\n\nkeys.forEach(key => {\n    if (key.startsWith(\"Attachment\")) {\n        const link = items[0].json[key] || \"\"; // Include empty attachments\n        all_attachments.push({ key, url: link });\n    }\n});\n\n// Return the structured output with the named array\nreturn [{\n    json: {\n        all_attachments: all_attachments\n    }\n}];\n"
+      },
+      "id": "117215e7-cb09-46b8-9886-b39270519c98",
+      "name": "ceate_all-attachments_array",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "dbd62429-29e5-4fc0-a858-02293a4a1c36",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1560,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "6089c524-a5e0-43fc-b779-91606287f4a4",
+              "leftValue": "={{ $json.url }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "fdd8827b-81ce-437a-ac7f-1948fac87599",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1800,
+        740
       ]
     },
     {
@@ -36,32 +212,117 @@
         "assignments": {
           "assignments": [
             {
-              "id": "c3a2d912-78bc-460a-8cb8-2668e2e6281f",
-              "name": "test",
-              "value": "hello",
+              "id": "2bd8d06b-e1aa-4bb6-8758-79ef8dae7678",
+              "name": "file_id",
+              "value": "={{ $json.url.split('/')[5] }}",
               "type": "string"
             }
           ]
         },
         "options": {}
       },
-      "id": "f715de99-ddbe-4642-bab0-7d1508af9ba3",
-      "name": "Edit Fields",
+      "id": "c1bd837e-dba7-4dc8-9fc4-930357a83034",
+      "name": "get_file_id",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1420,
-        600
+        2040,
+        840
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('If').item.json.url }}",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "id": "6e15eda6-0b1f-4920-b77d-a4ed3f10871f",
+      "name": "Google Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2260,
+        840
+      ]
+    },
+    {
+      "parameters": {
+        "name": "Test File nEw",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "16G-2KSXUReG1AB1vfedWS6YSp9kfIwRv",
+          "mode": "list",
+          "cachedResultName": "Xero connect setup",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/16G-2KSXUReG1AB1vfedWS6YSp9kfIwRv"
+        },
+        "options": {}
+      },
+      "id": "e52adda1-4c14-4872-84e6-c5c95a2696c0",
+      "name": "Google Drive1",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2080,
+        540
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "contact",
+        "operation": "getAll",
+        "organizationId": "40c98685-d0d0-420f-af21-7a3826ef914d",
+        "returnAll": true,
+        "options": {}
+      },
+      "id": "0807464f-0590-4967-a0e6-334f498e3a06",
+      "name": "Xero",
+      "type": "n8n-nodes-base.xero",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        440
       ]
     }
   ],
-  "pinData": {},
+  "pinData": {
+    "Google Sheets Trigger": [
+      {
+        "json": {
+          "Invoice Number": 4555,
+          "Supplier Name": "Company 1234",
+          "Invoice Date": "08/06/2024",
+          "Invoice Due Date": "21/07/2023",
+          "Tax": "No Tax",
+          "Qty": 1,
+          "Unit Price": 60000,
+          "Account Code": 494,
+          "Department": "Commercial",
+          "Project": "LA 2028",
+          "Currency": "",
+          "Attachment 1": "https://drive.google.com/file/d/1lochXVsy4fgzc--S4tkIJyXhYvhnVCeo/view?usp=drive_link",
+          "Attachment 2": "https://drive.google.com/file/d/18vi7zWxFVSdbh-9jx4wlWOtMI4eT2NRn/view?usp=drive_link",
+          "Attachment 3": "https://drive.google.com/file/d/1BhzdPnvgdiqPL6Ozswry9itHoskSOu40/view?usp=drive_link",
+          "Attachment 4": ""
+        }
+      }
+    ]
+  },
   "settings": {
     "executionOrder": "v1"
   },
   "staticData": null,
   "tags": [],
   "triggerCount": 0,
-  "updatedAt": "2024-08-30T07:42:48.558Z",
-  "versionId": "c756e6fa-b022-4834-b128-0c4dd3da18e8"
+  "updatedAt": "2024-08-30T11:17:11.000Z",
+  "versionId": "f6cc8672-adf8-494e-87ee-5a7151adbb1e"
 }
